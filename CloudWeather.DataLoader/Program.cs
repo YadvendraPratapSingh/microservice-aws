@@ -1,5 +1,6 @@
 ﻿using CloudWeather.DataLoader.Models;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
 
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
@@ -9,12 +10,12 @@ IConfiguration config = new ConfigurationBuilder()
 var serviceConfig = config.GetSection("Services");
 
 var tempServiceConfig = serviceConfig.GetSection("Temperature");
-var tempServiceHost = tempServiceConfig.GetValue<string>("Host");
-var tempServicePort = tempServiceConfig.GetValue<string>("Port");
+var tempServiceHost = tempServiceConfig["Host"];
+var tempServicePort = tempServiceConfig["Port"];
 
 var precipServiceConfig = serviceConfig.GetSection("Precipitation");
-var precipServiceHost = precipServiceConfig.GetValue<string>("Host");
-var precipServicePort = precipServiceConfig.GetValue<string>("Port");
+var precipServiceHost = precipServiceConfig["Host"];
+var precipServicePort = precipServiceConfig["Port"];
 
 var zipCodes = new List<string> { "98101", "98102", "98103", "98104", "98105" };
 
@@ -64,14 +65,14 @@ foreach ( var code in zipCodes)
     }
 }
 
-void PostPrecip(int lowTemp, object p, string zip, DateTime day, HttpClient precipitationHttpClient)
+void PostPrecip(int lowTemp, string zip, DateTime day, HttpClient precipitationHttpClient)
 {
     var rand = new Random();
     var isPrecip = rand.Next(2) < 1;
     PrecipitationModel precipObservation;
     if (isPrecip)
     {
-        var precipInches = Math.Round(rand.Next(1, 16));
+        var precipInches = rand.Next(1, 16);
         if(lowTemp < 32)
         {
             precipObservation = new PrecipitationModel
