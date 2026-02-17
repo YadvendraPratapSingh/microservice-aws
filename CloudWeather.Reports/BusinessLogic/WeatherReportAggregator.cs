@@ -72,8 +72,10 @@ namespace CloudWeather.Reports.BusinessLogic
         private string? BuildTemperatureServiceEndPoint(string zipCode, int days)
         {
            var tempServiceProtocol = WeatherConfig.Value.TempDataProtocol;
+            Console.WriteLine(tempServiceProtocol);
             var tempServiceHost = WeatherConfig.Value.TempDataHost;
             var tempServicePort = WeatherConfig.Value.TempDataPort;
+           // Console.WriteLine("Temperature service endpoint: {TempServiceProtocol}://{TempServiceHost}:{TempServicePort}", tempServiceProtocol, tempServiceHost, tempServicePort);
             return $"{tempServiceProtocol}://{tempServiceHost}:{tempServicePort}/observation/{zipCode}?days={days}";
         }
 
@@ -93,10 +95,22 @@ namespace CloudWeather.Reports.BusinessLogic
 
         private string BuildPrecipitationServiceEndPoint(string zipCode, int days)
         {
-            var precipServiceProtocol = WeatherConfig.Value.PrecipDataProtocol;
-            var precipServiceHost = WeatherConfig.Value.PrecipDataHost;
-            var precipServicePort = WeatherConfig.Value.PrecipDataPort;
-            return $"{precipServiceProtocol}://{precipServiceHost}:{precipServicePort}/observation/{zipCode}?days={days}";
+            try
+            {
+                Console.WriteLine("checking....");
+                var precipServiceProtocol = WeatherConfig.Value.PrecipDataProtocol;
+                Console.WriteLine(precipServiceProtocol);
+                var precipServiceHost = WeatherConfig.Value.PrecipDataHost;
+                var precipServicePort = WeatherConfig.Value.PrecipDataPort;
+                Console.WriteLine($"Precipitation service endpoint: {precipServiceProtocol}://{precipServiceHost}:{precipServicePort}");
+                return $"{precipServiceProtocol}://{precipServiceHost}:{precipServicePort}/observation/{zipCode}?days={days}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error building precipitation service endpoint: { ex.Message}");
+                throw;
+            }
+
         }
 
         private static decimal GetTotalSnow(IEnumerable<PrecipitationModel> precipData)
